@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+  <!-- Custom Web Script authenticator used to provide a custom authentication scheme in front of CMIS -->
+  <bean id="webscripts.authenticator.servicesso" class="org.alfresco.module.webscripts.sso.SSOAuthenticatorFactory">
+    <property name="authenticationService"   ref="AuthenticationService" />
+	<property name="personService"   ref="PersonService" />
+	<property name="useHeader"	value="false" />
+  </bean>
+  
+</beans>
