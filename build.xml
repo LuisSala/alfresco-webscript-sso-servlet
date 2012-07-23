@@ -20,7 +20,7 @@
 	<property name="jar.file" value="${build.dir}/lib/alfresco-webscript-sso.jar"/>
 	<property name="amp.file" value="${build.dir}/dist/alfresco-webscript-sso.amp"/>
 	<property name="war.filename" value="alfresco.war" />
-	<property name="war.file" value="../../../HEAD/root/projects/web-client/build/dist/alfresco.war"/>
+	<property name="war.file" value="/Users/luis/Alfresco/alfresco-ent-4.0/tomcat/webapps/alfresco.war"/>
 	
     <target name="clean">
         <delete dir="${build.dir}/dist"/>
@@ -53,9 +53,10 @@
     <target name="package-amp" depends="mkdirs, package-jar" description="Package the Module" >
         <zip destfile="${amp.file}" >
         	<fileset dir="${build.dir}" includes="lib/*.jar" />
-            <fileset dir="${project.dir}" includes="config/**/*.*" excludes="**/module.properties" />
-            <fileset dir="${project.dir}/config/alfresco/module/org_alfresco_module_webscripts_sso_SSOAuthenticator" includes="module.properties" />
+            <fileset dir="${project.dir}" includes="config/**/*.*" excludes="**/module.properties, **/file-mapping.properties" />
+            <fileset dir="${project.dir}/config/alfresco/module/org_alfresco_module_webscripts_sso_SSOAuthenticator" includes="module.properties, file-mapping.properties" />
    			<fileset dir="${project.dir}" includes="web/**/*.*" />
+			<fileset dir="${project.dir}" includes="WEB-INF/**/*.*" />
         </zip>
     </target>
 			

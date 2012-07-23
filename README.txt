@@ -1,7 +1,7 @@
 INSTALLATION
 ============
 
-The Web Script SSO AUthenticator is a drop-in replacement for the default Basic Authentication support.
+The Web Script SSO Authenticator is a drop-in replacement for the default Basic Authentication support.
 
 It works by looking for a REMOTE_USER server variable. If present, then that User ID will be used to
 authenticate the request.

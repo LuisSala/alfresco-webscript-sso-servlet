@@ -6,7 +6,7 @@
   <bean id="webscripts.authenticator.servicesso" class="org.alfresco.module.webscripts.sso.SSOAuthenticatorFactory">
     <property name="authenticationService"   ref="AuthenticationService" />
 	<property name="personService"   ref="PersonService" />
-	<property name="useHeader"	value="false" />
+	<property name="useHeader"	value="${ext.webscript.sso.useheader}" />
   </bean>
   
 </beans>

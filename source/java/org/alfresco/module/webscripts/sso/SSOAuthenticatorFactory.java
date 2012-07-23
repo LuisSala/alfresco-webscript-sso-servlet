@@ -23,6 +23,7 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -126,8 +127,11 @@ public class SSOAuthenticatorFactory
             boolean             result = false;
             HttpServletRequest  req    = servletReq.getHttpServletRequest();
             HttpServletResponse res    = servletRes.getHttpServletResponse();
+            String agent = req.getHeader("User-Agent");
             
             String userId = req.getRemoteUser();
+            
+            
             
             if ((userId == null || userId.equals("")) && useHeader)
             	userId = req.getHeader(HTTP_HEADER_NAME_USER_ID);            
@@ -154,6 +158,35 @@ public class SSOAuthenticatorFactory
                             log.debug("User Found:" + userId);
                 		AuthenticationUtil.setFullyAuthenticatedUser(userId);
                 		result = true;
+                		
+                		// iOS Devices get redirected to the Alfresco mobile app if a Session Cookie
+                		// such as "SMSESSION" is present.
+                        if (agent.contains("iPhone") || agent.contains("iPad") || agent.contains("iPod"))
+                        {
+                        	if (log.isDebugEnabled())
+                                log.debug("Mobile device detected");
+                        	
+                        	String hostname = req.getHeader("Host");
+                        	String sessionId = this.getCookieValue(req.getCookies(), "SMSESSION", null);
+                        	
+                        	// Cookies should have the proper domain set. Use the hostname to turn something
+                        	// like www.example.com to example.com
+                        	String domain = hostname;
+                        	
+                        	// When testing on localhost, there won't be a '.' in the hostname.
+                        	if (hostname.indexOf(".") > 0)
+                        		domain = domain.substring(hostname.indexOf("."));
+                        	
+                        	// Remove any port numbers. eg. 'www.example.com:8080' to 'example.com'
+                        	if (domain.indexOf(":") > 0)
+                        		domain = domain.substring(0,domain.indexOf(":"));                       	
+                        	
+                        	if (sessionId != null) {
+                        		String cookie = "SMSESSION="+sessionId+"; Domain="+domain+"; Path=/";
+                        		res.sendRedirect("alfrescoifc://auth-cookie?url=http://"+hostname+"&cookie="+cookie);
+                        	}
+                        }
+                		
                 	} else {
                 		if (log.isDebugEnabled())
                             log.debug("User " + userId + " Not Found. Switching to Guest Privileges");
@@ -176,6 +209,14 @@ public class SSOAuthenticatorFactory
             return result; 
         }
     
+        private String getCookieValue(Cookie[] cookies, String cookieName, String defaultValue) {
+        	for(int i=0; i<cookies.length; i++) {
+        		Cookie cookie = cookies[i];
+        		if (cookieName.equals(cookie.getName()))
+        			return(cookie.getValue());
+        	}
+        	return(defaultValue);
+        }
     
 	    /**
 	     * Debugging method for obtaining the state of a request as a String.
